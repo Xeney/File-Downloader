@@ -13,7 +13,7 @@ func main() {
 		log.Fatal("Ошибка инициализации логгера:", err)
 	}
 
-	err = logger.InitLogger("downloads.log")
+	err = logger.InitLogger(config.LogFile)
 	if err != nil {
 		log.Fatal(err)
 	}
