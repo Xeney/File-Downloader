@@ -1,0 +1,7 @@
+{
+    "max_threads": 10,
+    "download_dir": "./downloads",
+    "timeout_seconds": 30,
+    "enable_logging": true,
+    "log_file": "downloader.log"
+  }
