@@ -2,6 +2,7 @@ package app
 
 import (
 	"file_downloader/config"
+	"file_downloader/logger"
 	"fmt"
 	"io"
 	"net/http"
@@ -37,16 +38,19 @@ func NewDownloader(config config.Config) *Downloader {
 func (d *Downloader) DownloadFile(task DownloadTask) error {
 	resp, err := d.Client.Get(task.URL)
 	if err != nil {
+		logger.LogMessage(fmt.Sprintf("error: %v", err))
 		return fmt.Errorf("error: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		logger.LogMessage(fmt.Sprintf("server returned: %v", err))
 		return fmt.Errorf("server returned: %v", err)
 	}
 
 	file, err := os.Create("downloads/" + task.FilePath)
 	if err != nil {
+		logger.LogMessage(fmt.Sprintf("error: %v", err))
 		return fmt.Errorf("error: %v", err)
 	}
 	defer file.Close()
@@ -69,7 +73,7 @@ func (d *Downloader) WorkerPool(tasks []DownloadTask) error {
 
 			err := d.DownloadFile(t)
 			if err != nil {
-				fmt.Printf("Ошибка загрузки: %v\n", err)
+				logger.LogMessage(fmt.Sprintf("Ошибка загрузки: %v\n", err))
 			} else {
 				d.ProgressCh <- 1
 			}
@@ -88,5 +92,4 @@ func (d *Downloader) TrackProgress(total int) {
 		completed++
 		fmt.Printf("\rПрогресс: %d/%d (%.1f%%)", completed, total, float64(completed)/float64(total)*100)
 	}
-	fmt.Println("\nЗагрузка завершена!")
 }
